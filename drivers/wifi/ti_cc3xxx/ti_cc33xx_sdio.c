@@ -169,6 +169,7 @@ int sdioAdapt_deInit(void)
 {
 	struct sdhc_io io;
 	uint8_t io_en = 0;
+	int ret = 0;
 
 	k_mutex_lock(&dev_ctx.io_lock, K_FOREVER);
 
@@ -188,8 +189,10 @@ int sdioAdapt_deInit(void)
 
 		io.clock = 0;
 		io.power_mode = SDHC_POWER_OFF;
-		io.bus_mode = SDHC_BUSMODE_OPENDRAIN;
-		(void)sdhc_set_io(dev_ctx.sdhc_dev, &io);
+		ret = sdhc_set_io(dev_ctx.sdhc_dev, &io);
+		if (ret) {
+			LOG_ERR("Failed to power off SDHC (ret: %d)", ret);
+		}
 	}
 
 	dev_ctx.card.status = CARD_UNINITIALIZED;
@@ -197,7 +200,7 @@ int sdioAdapt_deInit(void)
 
 	k_mutex_unlock(&dev_ctx.io_lock);
 
-	return 0;
+	return ret;
 }
 
 int sdioAdapt_Init(void)
