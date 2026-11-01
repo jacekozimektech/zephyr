@@ -167,11 +167,13 @@ static void wlan_irq_disable_on_handler(void)
 
 int sdioAdapt_deInit(void)
 {
-	struct sdhc_io io = dev_ctx.card.bus_io;
+	struct sdhc_io io;
 	uint8_t io_en = 0;
 
-	k_event_clear(&dev_ctx.ti_sdio_init, TI_CC33XX_SDIO_EVT_INIT_SYNC);
 	k_mutex_lock(&dev_ctx.io_lock, K_FOREVER);
+
+	k_event_clear(&dev_ctx.ti_sdio_init, TI_CC33XX_SDIO_EVT_INIT_SYNC);
+	io = dev_ctx.card.bus_io;
 
 	if (dev_ctx.card.sdhc != NULL) {
 		if (dev_ctx.card.func0.card != NULL) {
